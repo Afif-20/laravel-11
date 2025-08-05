@@ -2,17 +2,39 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\ResponseHelper;
+use App\Repositories\UserRepository;
+use App\Resources\UserResource;
+use App\Services\UserService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    private UserRepository $user;
+    private UserService $userService;
+
+    public function __construct(UserRepository $user, UserService $userService)
     {
-        //
+        $this->user = $user;
+        $this->userService = $userService;
+    }
+
+    /**
+     * Get current User using auth token.
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+
+    public function index(Request $request)
+    {
+        try {
+            return ResponseHelper::success(UserResource::make($this->user->get()), trans('alert.get_current_user'));
+        } catch (\Throwable $th) {
+            return ResponseHelper::error(message: $th->getMessage());
+        }
     }
 
     /**
