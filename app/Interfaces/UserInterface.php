@@ -2,7 +2,7 @@
 
 namespace App\Interfaces;
 
-class UserInterface extends BaseInterface
+interface UserInterface extends BaseInterface
 {
     
 }
