@@ -8,7 +8,7 @@ use App\Resources\UserResource;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -28,7 +28,7 @@ class UserController extends Controller
      * @return JsonResponse
      */
 
-    public function index(Request $request)
+     public function index(Request $request): JsonResponse
     {
         try {
             return ResponseHelper::success(UserResource::make($this->user->get()), trans('alert.get_current_user'));
@@ -50,7 +50,11 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        DB::beginTransaction();
+        try{
+            $store = $this->userService->mapStore($request);
+            
+        }
     }
 
     /**
