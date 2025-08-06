@@ -45,7 +45,7 @@ trait UploadTrait
             return $file->storeAs($path, $file->getClientOriginalName());
         }
 
-        return Storage::put($path, $file);
+        return $file->store($path);
     }
 
 }
