@@ -2,11 +2,13 @@
 
 namespace App\Repositories;
 
+use App\Repositories\BaseRepository;
+use App\Interfaces\UserInterface;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class UserRepository
+class UserRepository extends BaseRepository implements UserInterface
 {
     /**
      * Create a new class instance.

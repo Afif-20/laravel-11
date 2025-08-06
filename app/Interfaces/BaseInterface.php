@@ -7,7 +7,6 @@ use App\Interfaces\Eloquent\GetInterface;
 use App\Interfaces\Eloquent\ShowInterface;
 use App\Interfaces\Eloquent\StoreInterface;
 use App\Interfaces\Eloquent\UpdateInterface;
-use Illuminate\Foundation\Mix;
 
 interface BaseInterface extends GetInterface, StoreInterface, ShowInterface, UpdateInterface, DeleteInterface
 {
