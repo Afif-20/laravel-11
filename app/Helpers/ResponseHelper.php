@@ -56,7 +56,7 @@ class ResponseHelper
      * @param mixed|null $data
      * @param string|null $message
      * @param int $code
-     * @return Json
+     * @return JsonResponse
      */
 
     public static function error(mixed $data = null, mixed $message = null, int $code = Response::HTTP_BAD_REQUEST): JsonResponse
@@ -65,7 +65,7 @@ class ResponseHelper
         self::$response['meta']['code'] = $code;
         self::$response['meta']['message'] = $message;
         self::$response['data'] = $data;
-        unset(self::$response['meta']['pagintaion']);
+        unset(self::$response['meta']['pagination']);
 
         $response = response()->json(self::$response, self::$response['meta']['code']);
 

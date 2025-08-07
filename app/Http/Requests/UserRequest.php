@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Helpers\ResponseHelper;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserRequest extends FormRequest
@@ -62,5 +63,10 @@ class UserRequest extends FormRequest
             'photo.mimes' => 'Foto harus berformat jpeg, png, atau jpg.',
             'photo.max' => 'Ukuran foto maksimal 2MB.',
         ];
+    }
+    
+    public function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        return ResponseHelper::error($validator->errors(), trans('alert.validation_errors'));
     }
 }

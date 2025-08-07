@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\UserRequest;
+use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Resources\UserResource;
 use App\Services\UserService;
@@ -48,21 +51,32 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserRequest $request): JsonResponse
     {
         DB::beginTransaction();
         try{
             $store = $this->userService->mapStore($request);
+            $result = $this->user->store($store);
             
+            DB::commit();
+            return ResponseHelper::success(message: trans('alert.add_success'));
+        } catch(\Throwable $th) {
+            DB::rollBack();
+            $errorMessage = trans('alert.add_failed') . "=>" . $th->getMessage();
+            return ResponseHelper::error(message: $errorMessage);
         }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $id): JsonResponse
     {
-        //
+        try {
+            return ResponseHelper::success($this->user->show($id), trans('alert.get_current_user'));
+        } catch (\Throwable $th) {
+            return ResponseHelper::error(message: $th->getMessage());
+        }
     }
 
     /**
@@ -76,16 +90,69 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UserRequest $request, User $user): JsonResponse
     {
-        //
+        DB::beginTransaction();
+        try {
+            $payload = $this->userService->mapUpdate($request, $user);
+            $user->update($payload);
+
+            DB::commit();
+            return ResponseHelper::success(message: trans('alert.update_success'));
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $errorMessage = trans('alert.update_failed') . "=>" . $th->getMessage();
+            return ResponseHelper::error(message: $errorMessage);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $this->userService->removeImage($user);
+            $user->delete();
+
+            DB::commit();
+            return ResponseHelper::success(message: trans('alert.user_soft_delete_succes'));
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            $errorMessage = trans('alert.user_soft_delete_failed') . "=>" . $th->getMessage();
+            return ResponseHelper::error(message: $errorMessage);
+        }
+    }
+
+    public function login(LoginRequest $request)
+    {
+        try {
+            $signInResult = $this->userService->handleSignIn($request);
+
+            return ResponseHelper::success(
+                $signInResult,
+                message: trans('alert.login_success')
+            );
+        } catch (\Throwable $th) {
+            $errorMessage = trans('alert.login_failed') . "=>" . $th->getMessage();
+            return ResponseHelper::error(message: $errorMessage);
+             }
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            $user = $request->user();
+
+            if($user && $user->currentAccessToken()) {
+                $user->currentAccessToken()->delete();
+                return ResponseHelper::success(message: trans('auth.logout_success'));
+            }
+
+            return ResponseHelper::error(message: 'auth.invalid_token');
+        } catch (\Throwable $th) {
+            return ResponseHelper::error(message: $th->getMessage());
+        }
     }
 }
