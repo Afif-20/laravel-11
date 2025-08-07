@@ -10,6 +10,7 @@ use App\Traits\UploadTrait;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class UserService
 {
@@ -67,7 +68,7 @@ class UserService
 
         $user = Auth::user();
 
-        $role = \DB::table('model_has_roles')
+        $role = DB::table('model_has_roles')
         ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
         ->where('model_has_roles.model_id', $user->id)
         ->where('model_has_roles.model_type', get_class($user))
