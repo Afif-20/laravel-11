@@ -56,7 +56,7 @@ class UserController extends Controller
         DB::beginTransaction();
         try{
             $store = $this->userService->mapStore($request);
-            $result = $this->user->store($store);
+            $user = $this->user->store($store);
             
             DB::commit();
             return ResponseHelper::success(message: trans('alert.add_success'));

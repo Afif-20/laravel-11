@@ -2,13 +2,16 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\UserRoleEnum;
+use App\Helpers\EnumHelper;
 use App\Helpers\ResponseHelper;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Enum;
 
 class UserRequest extends FormRequest
 {
     /**
-     * Determinate if the user is authorized to make this request.
+     * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
@@ -25,6 +28,7 @@ class UserRequest extends FormRequest
     {
         $rules = [
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'role' => ['required', new Enum(UserRoleEnum::class)],
         ];
 
         if ($this->isMethod('POST')) {
@@ -39,6 +43,7 @@ class UserRequest extends FormRequest
             $rules['name'] = 'sometimes|string|max:255';
             $rules['email'] = 'sometimes|email|unique:users,email,' . $userId;
             $rules['password'] = 'sometimes|string|min:8';
+            $rules['role'] = ['sometimes', new Enum(UserRoleEnum::class)];
         }
         
         return $rules;
@@ -46,6 +51,9 @@ class UserRequest extends FormRequest
 
     public function messages(): array
     {
+
+        $availableRoles = implode(', ', EnumHelper::toArray(UserRoleEnum::class));
+
         return [
             'name.required' => 'Nama wajib di isi.',
             'name.string' => 'Nama harus berupa teks.',
@@ -62,6 +70,9 @@ class UserRequest extends FormRequest
             'photo.image' => 'File foto harus berupa gambar.',
             'photo.mimes' => 'Foto harus berformat jpeg, png, atau jpg.',
             'photo.max' => 'Ukuran foto maksimal 2MB.',
+
+            'role.required' => 'Role wajib di isi',
+            'role.enum' => "Role harus salah satu dari: {$availableRoles}."
         ];
     }
     

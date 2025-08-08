@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
         'photo',
+        'role',
         'test_observer'
     ];
 
@@ -36,6 +38,26 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', UserRoleEnum::ADMIN);
+    }
+
+    public function scopeMembers($query)
+    {
+        return $query->where('role', UserRoleEnum::MEMBER);
+    }
+
+    public function hasRoleEnum(UserRoleEnum $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRoleEnum::ADMIN;
+    }
+
     /**
      * The attributes that should be cast.
      *
@@ -43,9 +65,12 @@ class User extends Authenticatable
      */
     protected function casts(): array
     {
+        
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRoleEnum::class,
         ];
+        
     }
 }

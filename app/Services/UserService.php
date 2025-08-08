@@ -28,6 +28,10 @@ class UserService
             $data["photo"] = $this->upload("users", $request->file('photo'));
         }
 
+        if ($request->role) {
+            $data["role"] = $request->role;
+        }
+
         return $data;
     }
 
@@ -42,6 +46,10 @@ class UserService
         if ($request->hasFile('photo')) {
             if ($user?->photo) $this->remove($user->photo);
             $data["photo"] = $this->upload("users", $request->file('photo'));
+        }
+
+        if ($request->role) {
+            $data["role"] = $request->role;
         }
 
         return $data;
