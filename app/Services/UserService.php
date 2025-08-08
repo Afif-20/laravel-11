@@ -24,7 +24,7 @@ class UserService
             $data["password"] = bcrypt($request->password);
         }
 
-        if ($request->password) {
+        if ($request->hasFile('photo')) {
             $data["photo"] = $this->upload("users", $request->file('photo'));
         }
 

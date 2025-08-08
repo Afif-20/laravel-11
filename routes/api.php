@@ -1,11 +1,9 @@
 <?php
 
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Models\User;
 
-Route::middleware(['enable.cors', 'throttle:5,1'])->group( function(){
+Route::middleware([ 'throttle:5,1'])->group( function(){
     Route::prefix('auth')->group( function(){
         Route::post('login', [UserController::class, 'login']);
         Route::post('regis', [UserController::class, 'store']);
