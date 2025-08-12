@@ -34,7 +34,7 @@ class UserController extends Controller
      public function index(Request $request): JsonResponse
     {
         try {
-            return ResponseHelper::success(UserResource::make($this->user->get()), trans('alert.get_current_user'));
+            return ResponseHelper::success(UserResource::collection($this->user->get()), trans('alert.get_current_user'));
         } catch (\Throwable $th) {
             return ResponseHelper::error(message: $th->getMessage());
         }
